@@ -5,16 +5,29 @@ plugins {
 group = 'ru.netology'
 version = '1.0-SNAPSHOT'
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.testng:testng:7.1.0'
 }
 
 test {
-    useJUnitPlatform()
+    useTestNG()
+
+    // Для отладки
+    testLogging {
+        events "PASSED", "SKIPPED", "FAILED", "STANDARD_OUT", "STANDARD_ERROR"
+        exceptionFormat = "full"
+    }
+
+    // Явно указываем где искать тесты
+    scanForTestClasses = true
+    include '**/*Test.class'
 }
