@@ -1,0 +1,53 @@
+name: TestNG Tests
+
+on:
+  push:
+    branches: [ testng ]
+  pull_request:
+    branches: [ testng ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: testng
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run TestNG tests
+        run: ./gradlew clean test
+        continue-on-error: true
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: testng-test-report
+          path: build/reports/tests/test/
+
+      - name: Check test results
+        run: |
+          if [ -f build/reports/tests/test/index.html ]; then
+            echo "✅ Tests completed. Check the report for details."
+            # Check if there are failures
+            if grep -q "failures=\"0\"" build/reports/tests/test/index.html; then
+              echo "❌ All tests passed unexpectedly - bug might be fixed!"
+              exit 1
+            else
+              echo "✅ Bug detected - some tests failed as expected"
+              exit 0
+            fi
+          else
+            echo "❌ Test report not found"
+            exit 1
+          fi
