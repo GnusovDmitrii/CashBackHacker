@@ -36,6 +36,7 @@ jobs:
           path: build/reports/tests/test/
 
       - name: Check test results
+        if: always()  # ← ДОБАВИТЬ ЭТУ СТРОКУ
         run: |
           if [ -f build/reports/tests/test/index.html ]; then
             echo "✅ Tests completed. Check the report for details."
