@@ -26,7 +26,6 @@ jobs:
 
       - name: Run JUnit4 tests
         run: ./gradlew clean test
-        continue-on-error: true
 
       - name: Upload test report
         if: always()
@@ -36,18 +35,18 @@ jobs:
           path: build/reports/tests/test/
 
       - name: Check test results
+        if: always()
         run: |
           if [ -f build/reports/tests/test/index.html ]; then
-            echo "✅ Tests completed. Check the report for details."
-            # Check if there are failures
+            echo "📊 Test report found"
             if grep -q "failures=\"0\"" build/reports/tests/test/index.html; then
-              echo "❌ All tests passed unexpectedly - bug might be fixed!"
+              echo "❌ ERROR: All tests passed - bug was not detected!"
               exit 1
             else
-              echo "✅ Bug detected - some tests failed as expected"
+              echo "✅ SUCCESS: Bug detected - tests failed as expected"
               exit 0
             fi
           else
-            echo "❌ Test report not found"
+            echo "❌ ERROR: Test report not found"
             exit 1
           fi
